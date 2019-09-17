@@ -7,7 +7,7 @@ extern crate panic_semihosting;
 use cortex_m::asm::delay;
 use cortex_m_rt::entry;
 use stm32_usbd::UsbBus;
-use stm32f3xx_hal::{prelude::*, stm32, hal::digital::v2::OutputPin};
+use stm32f3xx_hal::{prelude::*, stm32, hal::digital::v2::OutputPin, hal::digital::v2::InputPin};
 use usb_device::prelude::*;
 use usbd_serial::{SerialPort, USB_CLASS_CDC};
 
@@ -45,6 +45,9 @@ fn main() -> ! {
     let mut usb_dp = gpioa.pa12.into_push_pull_output(&mut gpioa.moder, &mut gpioa.otyper);
     usb_dp.set_low();
     delay(clocks.sysclk().0 / 100);
+
+    let button = gpioa.pa10.into_pull_down_input(&mut gpioa.moder, &mut gpioa.pupdr);
+    let _foo = button.is_high();
 
     let usb_dm = gpioa.pa11.into_af14(&mut gpioa.moder, &mut gpioa.afrh);
     let usb_dp = usb_dp.into_af14(&mut gpioa.moder, &mut gpioa.afrh);
