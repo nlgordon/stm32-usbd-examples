@@ -46,8 +46,7 @@ fn main() -> ! {
     usb_dp.set_low();
     delay(clocks.sysclk().0 / 100);
 
-    let button = gpioa.pa10.into_pull_down_input(&mut gpioa.moder, &mut gpioa.pupdr);
-    let _foo = button.is_high();
+    let button = gpioa.pa0.into_pull_down_input(&mut gpioa.moder, &mut gpioa.pupdr);
 
     let usb_dm = gpioa.pa11.into_af14(&mut gpioa.moder, &mut gpioa.afrh);
     let usb_dp = usb_dp.into_af14(&mut gpioa.moder, &mut gpioa.afrh);
@@ -78,7 +77,8 @@ fn main() -> ! {
 
                 // Echo back in upper case
                 for c in buf[0..count].iter_mut() {
-                    if 0x61 <= *c && *c <= 0x7a {
+                    let button_pressed = button.is_high().unwrap();
+                    if 0x61 <= *c && *c <= 0x7a && button_pressed {
                         *c &= !0x20;
                     }
                 }
